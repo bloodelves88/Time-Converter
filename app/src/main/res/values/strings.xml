@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">Time Converter</string>
 
-    <string name="hello_world">Hello world!</string>
+
     <string name="action_settings">Settings</string>
+
+    <!-- GUI Strings -->
+    <string name="timezone">Timezone:</string>
+    <string name="time">Time:</string>
+    <string name="date">Date:</string>
+    <string name="converted_time">Converted Time:</string>
+    <string name="convert">Convert</string>
+    <string name="current_timezone_default">(currently SGT, GMT+8)</string>
+    <string name="current_time_default">8:00pm</string>
+    <string name="current_date_default">22/06/2015</string>
 </resources>
