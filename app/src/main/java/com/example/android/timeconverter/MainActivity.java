@@ -17,10 +17,6 @@ import java.util.TimeZone;
 
 
 public class MainActivity extends ActionBarActivity {
-
-    int hour;
-    int minute;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,55 +46,48 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void convertTime(View view) {
-        boolean isDSTActive = false;
-        boolean isMorning;
+        boolean DSTIsActive = false;
 
         long timeZoneId = getTimeZoneId();
-        getTime();
-        Calendar date = getDate();
+        Calendar date = getDateAndTime();
 
-        if (timeZoneId == 0) {
-            hour += 16;
-            isDSTActive = TimeZone.getTimeZone("GMT-8:00").inDaylightTime( new Date() );
-        } else if (timeZoneId == 1) {
-            hour += 15;
-            isDSTActive = TimeZone.getTimeZone("GMT-7:00").inDaylightTime( new Date() );
-        } else if (timeZoneId == 2) {
-            isDSTActive = TimeZone.getTimeZone("GMT+8:00").inDaylightTime( new Date() );
+        TimeZone tz = TimeZone.getDefault();
+        String GMTTimeZone = tz.getDisplayName(false, TimeZone.SHORT);
+
+        if (timeZoneId == 0 && !GMTTimeZone.equals("GMT-08:00")) {
+            date.add(Calendar.HOUR_OF_DAY, +16);
+            DSTIsActive = TimeZone.getTimeZone("GMT-8:00").inDaylightTime( new Date() );
+        } else if (timeZoneId == 1 && !GMTTimeZone.equals("GMT-07:00")) {
+            date.add(Calendar.HOUR_OF_DAY, +15);
+            DSTIsActive = TimeZone.getTimeZone("GMT-7:00").inDaylightTime( new Date() );
+        } else if (timeZoneId == 2 && !GMTTimeZone.equals("GMT+08:00")) {
+            date.add(Calendar.HOUR_OF_DAY, +8);
+            DSTIsActive = TimeZone.getTimeZone("GMT+8:00").inDaylightTime( new Date() );
         }
 
-        if (hour > 23) {
-            hour -= 24;
-            date.add(Calendar.DAY_OF_MONTH, +1);
+        // Is this needed?
+        if (DSTIsActive == true) {
+            date.add(Calendar.HOUR_OF_DAY, +1);
         }
 
-        if (hour > 12) {
-            isMorning = false;
-            hour -= 12;
-        } else {
-            isMorning = true;
-        }
-
-        if (isDSTActive == true) {
-            hour += 1;
-        }
-
-        setTimeText(isMorning);
+        setTimeText(date);
 
         setCurrentTimeZoneText();
 
         setDateText(date);
     }
 
-    private void setTimeText(boolean isMorning) {
+    private void setTimeText(Calendar date) {
         TextView convertedTimeText = (TextView)findViewById(R.id.converted_time);
-        if (minute == 0) {
-            convertedTimeText.setText("" + hour + ":" + minute + "0");
+        if (date.get(Calendar.MINUTE) == 0) {
+            convertedTimeText.setText("" + date.get(Calendar.HOUR) + ":" + date.get(Calendar.MINUTE) + "0");
+        } else if (date.get(Calendar.MINUTE) < 10) {
+            convertedTimeText.setText("" + date.get(Calendar.HOUR) + ":0" + date.get(Calendar.MINUTE));
         } else {
-            convertedTimeText.setText("" + hour + ":" + minute);
+            convertedTimeText.setText("" + date.get(Calendar.HOUR) + ":" + date.get(Calendar.MINUTE));
         }
 
-        if (isMorning == true) {
+        if (date.get(Calendar.AM_PM) == Calendar.AM) {
             convertedTimeText.append(" am");
         } else {
             convertedTimeText.append(" pm");
@@ -123,21 +112,19 @@ public class MainActivity extends ActionBarActivity {
         return timeZoneSpinner.getSelectedItemId();
     }
 
-    private Calendar getDate() {
+    private Calendar getDateAndTime() {
         DatePicker datePicker = (DatePicker)findViewById(R.id.datePicker);
         int day = datePicker.getDayOfMonth();
         int month = datePicker.getMonth(); // returns 0-11
         int year = datePicker.getYear();
 
+        TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
+        int hour = timePicker.getCurrentHour(); // Returns 0-23
+        int minute = timePicker.getCurrentMinute();
+
         Calendar date = new GregorianCalendar();
-        date.set(year, month, day);
+        date.set(year, month, day, hour, minute);
 
         return date;
-    }
-
-    private void getTime() {
-        TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
-        hour = timePicker.getCurrentHour(); // Returns 0-23
-        minute = timePicker.getCurrentMinute();
     }
 }
