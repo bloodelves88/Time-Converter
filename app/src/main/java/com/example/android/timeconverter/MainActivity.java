@@ -10,8 +10,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.util.Date;
+import java.util.TimeZone;
+
 
 public class MainActivity extends ActionBarActivity {
+
+    int hour;
+    int minute;
+    int day;
+    int month;
+    int year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,23 +51,75 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void convertTime(View view) {
-        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.timezones_spinner);
-        //String text = timeZoneSpinner.getSelectedItem().toString();
-        long timeZoneId = timeZoneSpinner.getSelectedItemId();
+        boolean isDSTActive = false;
+        boolean isMorning;
 
-        TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
-        int hour = timePicker.getCurrentHour(); // Returns 0-23
-        int minute = timePicker.getCurrentMinute();
+        long timeZoneId = getTimeZoneId();
+        getTime();
+        getDate();
 
-        DatePicker datePicker = (DatePicker)findViewById(R.id.datePicker);
-        int day = datePicker.getDayOfMonth();
-        int month = datePicker.getMonth() + 1; // returns 0-11
-        int year = datePicker.getYear();
+        if (timeZoneId == 0) {
+            hour += 16;
+            isDSTActive = TimeZone.getTimeZone("GMT-8:00").inDaylightTime( new Date() );
+        } else if (timeZoneId == 1) {
+            hour += 15;
+            isDSTActive = TimeZone.getTimeZone("GMT-7:00").inDaylightTime( new Date() );
+        } else if (timeZoneId == 2) {
+            isDSTActive = TimeZone.getTimeZone("GMT+8:00").inDaylightTime( new Date() );
+        }
+
+        if (hour > 23) {
+            hour -= 24;
+            day += 1;
+        }
+
+        if (hour > 12) {
+            isMorning = false;
+            hour -= 12;
+        } else {
+            isMorning = true;
+        }
+
+        if (isDSTActive == true) {
+            hour += 1;
+        }
 
         TextView convertedTimeText = (TextView)findViewById(R.id.converted_time);
-        convertedTimeText.setText("" + hour + ":" + minute);
+        if (minute == 0) {
+            convertedTimeText.setText("" + hour + ":" + minute + "0");
+        } else {
+            convertedTimeText.setText("" + hour + ":" + minute);
+        }
+
+        if (isMorning == true) {
+            convertedTimeText.append(" am");
+        } else {
+            convertedTimeText.append(" pm");
+        }
+
+        TextView currentTimeZone = (TextView)findViewById(R.id.current_timezone);
+        TimeZone tz = TimeZone.getDefault();
+        currentTimeZone.setText("(currently " + tz.getID() + "time, " + tz.getDisplayName(false, TimeZone.SHORT) + ")");
 
         TextView convertedDateText = (TextView)findViewById(R.id.converted_date);
         convertedDateText.setText("" + day + "/" + month + "/" + year);
+    }
+
+    private long getTimeZoneId() {
+        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.timezones_spinner);
+        return timeZoneSpinner.getSelectedItemId();
+    }
+
+    private void getDate() {
+        DatePicker datePicker = (DatePicker)findViewById(R.id.datePicker);
+        day = datePicker.getDayOfMonth();
+        month = datePicker.getMonth() + 1; // returns 0-11
+        year = datePicker.getYear();
+    }
+
+    private void getTime() {
+        TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
+        hour = timePicker.getCurrentHour(); // Returns 0-23
+        minute = timePicker.getCurrentMinute();
     }
 }
