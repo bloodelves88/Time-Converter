@@ -10,7 +10,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 
@@ -18,9 +20,6 @@ public class MainActivity extends ActionBarActivity {
 
     int hour;
     int minute;
-    int day;
-    int month;
-    int year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +55,7 @@ public class MainActivity extends ActionBarActivity {
 
         long timeZoneId = getTimeZoneId();
         getTime();
-        getDate();
+        Calendar date = getDate();
 
         if (timeZoneId == 0) {
             hour += 16;
@@ -70,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
 
         if (hour > 23) {
             hour -= 24;
-            day += 1;
+            date.add(Calendar.DAY_OF_MONTH, +1);
         }
 
         if (hour > 12) {
@@ -84,6 +83,14 @@ public class MainActivity extends ActionBarActivity {
             hour += 1;
         }
 
+        setTimeText(isMorning);
+
+        setCurrentTimeZoneText();
+
+        setDateText(date);
+    }
+
+    private void setTimeText(boolean isMorning) {
         TextView convertedTimeText = (TextView)findViewById(R.id.converted_time);
         if (minute == 0) {
             convertedTimeText.setText("" + hour + ":" + minute + "0");
@@ -96,13 +103,19 @@ public class MainActivity extends ActionBarActivity {
         } else {
             convertedTimeText.append(" pm");
         }
+    }
 
+    private void setDateText(Calendar date) {
+        TextView convertedDateText = (TextView)findViewById(R.id.converted_date);
+        convertedDateText.setText("" + date.get(Calendar.DATE) + "/" + (date.get(Calendar.MONTH) + 1)
+                                  + "/" + date.get(Calendar.YEAR));
+    }
+
+    private void setCurrentTimeZoneText() {
         TextView currentTimeZone = (TextView)findViewById(R.id.current_timezone);
         TimeZone tz = TimeZone.getDefault();
-        currentTimeZone.setText("(currently " + tz.getID() + "time, " + tz.getDisplayName(false, TimeZone.SHORT) + ")");
-
-        TextView convertedDateText = (TextView)findViewById(R.id.converted_date);
-        convertedDateText.setText("" + day + "/" + month + "/" + year);
+        currentTimeZone.setText("(currently " + tz.getID() + " timezone, " +
+                                tz.getDisplayName(false, TimeZone.SHORT) + ")");
     }
 
     private long getTimeZoneId() {
@@ -110,11 +123,16 @@ public class MainActivity extends ActionBarActivity {
         return timeZoneSpinner.getSelectedItemId();
     }
 
-    private void getDate() {
+    private Calendar getDate() {
         DatePicker datePicker = (DatePicker)findViewById(R.id.datePicker);
-        day = datePicker.getDayOfMonth();
-        month = datePicker.getMonth() + 1; // returns 0-11
-        year = datePicker.getYear();
+        int day = datePicker.getDayOfMonth();
+        int month = datePicker.getMonth(); // returns 0-11
+        int year = datePicker.getYear();
+
+        Calendar date = new GregorianCalendar();
+        date.set(year, month, day);
+
+        return date;
     }
 
     private void getTime() {
