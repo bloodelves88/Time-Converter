@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -46,34 +45,38 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void convertTime(View view) {
-        boolean DSTIsActive = false;
 
+        TimeZone targetTimeZone;
         long timeZoneId = getTimeZoneId();
         Calendar date = getDateAndTime();
 
-        TimeZone tz = TimeZone.getDefault();
-        String GMTTimeZone = tz.getDisplayName(false, TimeZone.SHORT);
+        TimeZone currentTimeZone = TimeZone.getDefault();
+        int currentTimeOffset = currentTimeZone.getOffset(GregorianCalendar.AD, date.get(Calendar.YEAR),
+                date.get(Calendar.MONTH),
+                date.get(Calendar.DAY_OF_MONTH),
+                date.get(Calendar.DAY_OF_WEEK),
+                date.get(Calendar.MILLISECOND));
 
-        if (timeZoneId == 0 && !GMTTimeZone.equals("GMT-08:00")) {
-            date.add(Calendar.HOUR_OF_DAY, +16);
-            DSTIsActive = TimeZone.getTimeZone("GMT-8:00").inDaylightTime( new Date() );
-        } else if (timeZoneId == 1 && !GMTTimeZone.equals("GMT-07:00")) {
-            date.add(Calendar.HOUR_OF_DAY, +15);
-            DSTIsActive = TimeZone.getTimeZone("GMT-7:00").inDaylightTime( new Date() );
-        } else if (timeZoneId == 2 && !GMTTimeZone.equals("GMT+08:00")) {
-            date.add(Calendar.HOUR_OF_DAY, +8);
-            DSTIsActive = TimeZone.getTimeZone("GMT+8:00").inDaylightTime( new Date() );
+        if (timeZoneId == 0) {
+            targetTimeZone = TimeZone.getTimeZone("GMT-8:00");
+        } else if (timeZoneId == 1) {
+            targetTimeZone = TimeZone.getTimeZone("GMT-7:00");
+        } else {
+            targetTimeZone = TimeZone.getTimeZone("GMT+8:00");
         }
 
-        // Is this needed?
-        if (DSTIsActive == true) {
-            date.add(Calendar.HOUR_OF_DAY, +1);
-        }
+        int targetTimeOffset = targetTimeZone.getOffset(GregorianCalendar.AD,
+                date.get(Calendar.YEAR),
+                date.get(Calendar.MONTH),
+                date.get(Calendar.DAY_OF_MONTH),
+                date.get(Calendar.DAY_OF_WEEK),
+                date.get(Calendar.MILLISECOND));
+
+        int adjustment = currentTimeOffset - targetTimeOffset;
+        date.add(Calendar.MILLISECOND, +adjustment);
 
         setTimeText(date);
-
         setCurrentTimeZoneText();
-
         setDateText(date);
     }
 
@@ -85,6 +88,10 @@ public class MainActivity extends ActionBarActivity {
             convertedTimeText.setText("" + date.get(Calendar.HOUR) + ":0" + date.get(Calendar.MINUTE));
         } else {
             convertedTimeText.setText("" + date.get(Calendar.HOUR) + ":" + date.get(Calendar.MINUTE));
+        }
+
+        if (date.get(Calendar.HOUR) == 0) {
+            convertedTimeText.setText("12:" + date.get(Calendar.MINUTE) + "0");
         }
 
         if (date.get(Calendar.AM_PM) == Calendar.AM) {
