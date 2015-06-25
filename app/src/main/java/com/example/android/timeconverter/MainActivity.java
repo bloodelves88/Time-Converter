@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -20,6 +21,38 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Spinner timeZonesSpinner = (Spinner)findViewById(R.id.timezones_spinner);
+        timeZonesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                convertTime();
+            }
+
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+
+        TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
+        timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                convertTime();
+            }
+        });
+
+        DatePicker datePicker = (DatePicker)findViewById(R.id.datePicker);
+        datePicker.init(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(),
+                        new DatePicker.OnDateChangedListener() {
+
+            @Override
+            public void onDateChanged(DatePicker view, int year, int month, int day) {
+                convertTime();
+            }
+        });
+
+
     }
 
     @Override
@@ -44,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void convertTime(View view) {
+    public void convertTime() {
 
         long timeZoneId = getTimeZoneId();
         Calendar date = getDateAndTime();
@@ -115,7 +148,8 @@ public class MainActivity extends ActionBarActivity {
 
     private void setDateText(Calendar date) {
         TextView convertedDateText = (TextView)findViewById(R.id.converted_date);
-        convertedDateText.setText("" + date.get(Calendar.DATE) + "/" + (date.get(Calendar.MONTH) + 1)
+        convertedDateText.setText("" + date.get(Calendar.DATE) + "/"
+                                  + (date.get(Calendar.MONTH) + 1)
                                   + "/" + date.get(Calendar.YEAR));
     }
 
