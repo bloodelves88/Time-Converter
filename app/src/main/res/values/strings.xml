@@ -4,17 +4,21 @@
     <string name="action_settings">Settings</string>
 
     <!-- GUI Strings -->
-    <string name="timezone">Timezone:</string>
+    <string name="timezone">From Timezone:</string>
     <string name="time">Time:</string>
     <string name="date">Date:</string>
-    <string name="converted_time">Converted Time:</string>
+    <string name="converted_time">To Timezone:</string>
     <string name="convert">Convert</string>
-    <string name="current_timezone_default">(currently SGT, GMT+8)</string>
-    <string name="current_time_default"></string>
-    <string name="current_date_default"></string>
 
-    <!-- Timezone choices for dropdown menu -->
-    <string-array name="timezones_array">
+    <!-- "From" timezone choices for dropdown menu -->
+    <string-array name="from_timezones_array">
+        <item>PST (GMT -8)</item>
+        <item>PDT (GMT -7)</item>
+        <item>SGT (GMT +8)</item>
+    </string-array>
+
+    <!-- "To" choices for dropdown menu -->
+    <string-array name="to_timezones_array">
         <item>PST (GMT -8)</item>
         <item>PDT (GMT -7)</item>
         <item>SGT (GMT +8)</item>

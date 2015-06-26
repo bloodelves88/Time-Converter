@@ -24,8 +24,21 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        Spinner timeZonesSpinner = (Spinner)findViewById(R.id.timezones_spinner);
-        timeZonesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        Spinner sourceTimeZoneSpinner = (Spinner)findViewById(R.id.from_timezones_spinner);
+        sourceTimeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                convertTime();
+            }
+
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+
+        Spinner targetTimeZoneSpinner = (Spinner)findViewById(R.id.to_timezones_spinner);
+        setDefaultTargetSpinnerSelection(targetTimeZoneSpinner);
+        targetTimeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view,
                                        int position, long id) {
                 convertTime();
@@ -58,6 +71,18 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    private void setDefaultTargetSpinnerSelection(Spinner targetTimeZoneSpinner) {
+        TimeZone currentTimeZone = TimeZone.getDefault();
+
+        if (currentTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-08:00")) {
+            targetTimeZoneSpinner.setSelection(0);
+        } else if (currentTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-07:00")) {
+            targetTimeZoneSpinner.setSelection(1);
+        } else {
+            targetTimeZoneSpinner.setSelection(2);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -81,14 +106,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void convertTime() {
-
-        long timeZoneId = getTimeZoneId();
         Calendar date = getDateAndTime();
 
-        int currentTimeOffset = getCurrentTimeOffset();
-        int targetTimeOffset = getTargetTimeOffset(timeZoneId, date);
+        int targetTimeOffset = getTargetTimeOffset();
+        int sourceTimeOffset = getSourceTimeOffset(date);
 
-        int adjustment = currentTimeOffset - targetTimeOffset;
+        int adjustment = targetTimeOffset - sourceTimeOffset;
         date.add(Calendar.MILLISECOND, +adjustment);
 
         setTimeText(date);
@@ -96,17 +119,13 @@ public class MainActivity extends ActionBarActivity {
         setDateText(date);
     }
 
-    private int getTargetTimeOffset(long timeZoneId, Calendar date) {
-        TimeZone targetTimeZone;
-        if (timeZoneId == 0) {
-            targetTimeZone = TimeZone.getTimeZone("GMT-8:00");
-        } else if (timeZoneId == 1) {
-            targetTimeZone = TimeZone.getTimeZone("GMT-7:00");
-        } else {
-            targetTimeZone = TimeZone.getTimeZone("GMT+8:00");
-        }
+    private int getSourceTimeOffset(Calendar date) {
+        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.from_timezones_spinner);
+        long spinnerSelectionId = timeZoneSpinner.getSelectedItemId();
 
-        return targetTimeZone.getOffset(GregorianCalendar.AD,
+        TimeZone sourceTimeZone = getTimeZone(spinnerSelectionId);
+
+        return sourceTimeZone.getOffset(GregorianCalendar.AD,
                 date.get(Calendar.YEAR),
                 date.get(Calendar.MONTH),
                 date.get(Calendar.DAY_OF_MONTH),
@@ -114,14 +133,31 @@ public class MainActivity extends ActionBarActivity {
                 date.get(Calendar.MILLISECOND));
     }
 
-    private int getCurrentTimeOffset() {
+    private int getTargetTimeOffset() {
+        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.to_timezones_spinner);
+        long spinnerSelectionId = timeZoneSpinner.getSelectedItemId();
+
         Calendar today = Calendar.getInstance();
-        TimeZone currentTimeZone = TimeZone.getDefault();
-        return currentTimeZone.getOffset(GregorianCalendar.AD, today.get(Calendar.YEAR),
+
+        TimeZone targetTimeZone = getTimeZone(spinnerSelectionId);
+
+        return targetTimeZone.getOffset(GregorianCalendar.AD, today.get(Calendar.YEAR),
                 today.get(Calendar.MONTH),
                 today.get(Calendar.DAY_OF_MONTH),
                 today.get(Calendar.DAY_OF_WEEK),
                 today.get(Calendar.MILLISECOND));
+    }
+
+    private TimeZone getTimeZone(long spinnerSelectionId) {
+        TimeZone timeZone;
+        if (spinnerSelectionId == 0) {
+            timeZone = TimeZone.getTimeZone("GMT-8:00");
+        } else if (spinnerSelectionId == 1) {
+            timeZone = TimeZone.getTimeZone("GMT-7:00");
+        } else {
+            timeZone = TimeZone.getTimeZone("GMT+8:00");
+        }
+        return timeZone;
     }
 
     private void setTimeText(Calendar date) {
@@ -159,13 +195,8 @@ public class MainActivity extends ActionBarActivity {
     private void setCurrentTimeZoneText() {
         TextView currentTimeZone = (TextView)findViewById(R.id.current_timezone);
         TimeZone tz = TimeZone.getDefault();
-        currentTimeZone.setText("(currently " + tz.getID() + " timezone, " +
+        currentTimeZone.setText("(you are in the " + tz.getID() + " timezone, " +
                                 tz.getDisplayName(false, TimeZone.SHORT) + ")");
-    }
-
-    private long getTimeZoneId() {
-        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.timezones_spinner);
-        return timeZoneSpinner.getSelectedItemId();
     }
 
     private Calendar getDateAndTime() {
