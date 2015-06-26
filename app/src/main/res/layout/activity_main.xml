@@ -25,7 +25,7 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/timezone"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <Spinner
                 android:id="@+id/from_timezones_spinner"
@@ -52,7 +52,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="8dp"
                 android:text="@string/time"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <TimePicker
                 android:id="@+id/timePicker"
@@ -74,7 +74,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="8dp"
                 android:text="@string/date"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <DatePicker
                 android:id="@+id/datePicker"
@@ -106,7 +106,7 @@
                 android:text="@string/converted_time"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="8dp"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <Spinner
                 android:id="@+id/to_timezones_spinner"
