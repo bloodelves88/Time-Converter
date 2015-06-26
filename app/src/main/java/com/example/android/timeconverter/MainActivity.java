@@ -1,5 +1,6 @@
 package com.example.android.timeconverter;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -21,6 +22,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         Spinner timeZonesSpinner = (Spinner)findViewById(R.id.timezones_spinner);
         timeZonesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -35,6 +37,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
+        timePicker.setCurrentMinute(0);
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
 
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
