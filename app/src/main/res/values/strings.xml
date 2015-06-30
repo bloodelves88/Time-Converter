@@ -4,10 +4,10 @@
     <string name="action_settings">Settings</string>
 
     <!-- GUI Strings -->
-    <string name="timezone">From Timezone:</string>
+    <string name="timezone">From Time Zone:</string>
     <string name="time">Time:</string>
     <string name="date">Date:</string>
-    <string name="converted_time">To Timezone:</string>
+    <string name="converted_time">To Time Zone:</string>
     <string name="convert">Convert</string>
 
     <!-- "From" timezone choices for dropdown menu -->
