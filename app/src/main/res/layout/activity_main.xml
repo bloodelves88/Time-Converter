@@ -34,7 +34,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="16sp"
                 android:layout_marginTop="10dp"
-                android:entries="@array/from_timezones_array"
+                android:entries="@array/timezones_array"
                 android:spinnerMode="dialog" />
 
         </LinearLayout>
@@ -115,7 +115,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="10dp"
-                android:entries="@array/to_timezones_array"
+                android:entries="@array/timezones_array"
                 android:spinnerMode="dialog" />
 
         </LinearLayout>

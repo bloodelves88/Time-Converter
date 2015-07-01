@@ -11,16 +11,13 @@
     <string name="convert">Convert</string>
 
     <!-- "From" timezone choices for dropdown menu -->
-    <string-array name="from_timezones_array">
+    <string-array name="timezones_array">
         <item>PST (GMT -8)</item>
         <item>PDT (GMT -7)</item>
-        <item>SGT (GMT +8)</item>
-    </string-array>
-
-    <!-- "To" choices for dropdown menu -->
-    <string-array name="to_timezones_array">
-        <item>PST (GMT -8)</item>
-        <item>PDT (GMT -7)</item>
+        <item>EST (GMT -5)</item>
+        <item>EDT (GMT -4)</item>
+        <item>CET (GMT +1)</item>
+        <item>CEST (GMT +2)</item>
         <item>SGT (GMT +8)</item>
     </string-array>
 

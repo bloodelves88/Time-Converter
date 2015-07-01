@@ -78,8 +78,16 @@ public class MainActivity extends ActionBarActivity {
             targetTimeZoneSpinner.setSelection(0);
         } else if (currentTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-07:00")) {
             targetTimeZoneSpinner.setSelection(1);
-        } else {
+        } else if (currentTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-05:00")) {
             targetTimeZoneSpinner.setSelection(2);
+        } else if (currentTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-04:00")) {
+            targetTimeZoneSpinner.setSelection(3);
+        } else if (currentTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT+01:00")) {
+            targetTimeZoneSpinner.setSelection(4);
+        } else if (currentTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT+02:00")) {
+            targetTimeZoneSpinner.setSelection(5);
+        } else {
+            targetTimeZoneSpinner.setSelection(6);
         }
     }
 
@@ -154,6 +162,14 @@ public class MainActivity extends ActionBarActivity {
             timeZone = TimeZone.getTimeZone("GMT-8:00");
         } else if (spinnerSelectionId == 1) {
             timeZone = TimeZone.getTimeZone("GMT-7:00");
+        } else if (spinnerSelectionId == 2) {
+            timeZone = TimeZone.getTimeZone("GMT-5:00");
+        } else if (spinnerSelectionId == 3) {
+            timeZone = TimeZone.getTimeZone("GMT-4:00");
+        } else if (spinnerSelectionId == 4) {
+            timeZone = TimeZone.getTimeZone("GMT+1:00");
+        } else if (spinnerSelectionId == 5) {
+            timeZone = TimeZone.getTimeZone("GMT+2:00");
         } else {
             timeZone = TimeZone.getTimeZone("GMT+8:00");
         }
