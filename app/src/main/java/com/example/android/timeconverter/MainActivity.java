@@ -114,25 +114,59 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void convertTime() {
-        Calendar date = getDateAndTime();
+        Calendar date = getInputDateAndTime();
 
+        TimeZone sourceTimeZoneGMT = getSourceTimeZoneGMT();
+        TimeZone sourceTimeZoneLocation = getSourceTimeZoneLocation();
+        boolean isObservingDaylightSavings = sourceTimeZoneLocation.inDaylightTime(date.getTime());
+
+        int sourceTimeOffset = getSourceTimeOffset(sourceTimeZoneGMT, date);
         int targetTimeOffset = getTargetTimeOffset();
-        int sourceTimeOffset = getSourceTimeOffset(date);
 
         int adjustment = targetTimeOffset - sourceTimeOffset;
         date.add(Calendar.MILLISECOND, +adjustment);
 
+        setDaylightSavingsText(isObservingDaylightSavings, sourceTimeZoneGMT);
         setTimeText(date);
         setCurrentTimeZoneText();
         setDateText(date);
     }
 
-    private int getSourceTimeOffset(Calendar date) {
-        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.from_timezones_spinner);
-        long spinnerSelectionId = timeZoneSpinner.getSelectedItemId();
+    private void setDaylightSavingsText(boolean isObservingDaylightSavings, TimeZone sourceTimeZone) {
+        TextView daylightSavingsText = (TextView)findViewById(R.id.daylight_savings_warning);
 
-        TimeZone sourceTimeZone = getTimeZone(spinnerSelectionId);
+        daylightSavingsText.setVisibility(View.VISIBLE);
 
+        if (isObservingDaylightSavings == false) {
+            if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-07:00")) {
+                daylightSavingsText.setText("Daylight savings time is currently not observed. " +
+                        "Consider using PST (GMT-08:00) instead");
+            } else if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-04:00")) {
+                daylightSavingsText.setText("Daylight savings time is currently not observed. " +
+                        "Consider using EST (GMT-05:00) instead");
+            } else if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT+02:00")) {
+                daylightSavingsText.setText("Daylight savings time is currently not observed. " +
+                        "Consider using CET (GMT+01:00) instead");
+            } else {
+                daylightSavingsText.setVisibility(View.GONE);
+            }
+        } else if (isObservingDaylightSavings == true) {
+            if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-08:00")) {
+                daylightSavingsText.setText("Daylight savings time is currently being observed. " +
+                        "Consider using PDT (GMT-07:00) instead");
+            } else if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-05:00")) {
+                daylightSavingsText.setText("Daylight savings time is currently being observed. " +
+                        "Consider using EDT (GMT-04:00) instead");
+            } else if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT+01:00")) {
+                daylightSavingsText.setText("Daylight savings time is currently being observed. " +
+                        "Consider using CEST (GMT+02:00) instead");
+            } else {
+                daylightSavingsText.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private int getSourceTimeOffset(TimeZone sourceTimeZone, Calendar date) {
         return sourceTimeZone.getOffset(GregorianCalendar.AD,
                 date.get(Calendar.YEAR),
                 date.get(Calendar.MONTH),
@@ -141,13 +175,27 @@ public class MainActivity extends ActionBarActivity {
                 date.get(Calendar.MILLISECOND));
     }
 
+    private TimeZone getSourceTimeZoneGMT() {
+        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.from_timezones_spinner);
+        long spinnerSelectionId = timeZoneSpinner.getSelectedItemId();
+
+        return getTimeZoneGMT(spinnerSelectionId);
+    }
+
+    private TimeZone getSourceTimeZoneLocation() {
+        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.from_timezones_spinner);
+        long spinnerSelectionId = timeZoneSpinner.getSelectedItemId();
+
+        return getTimeZoneLocation(spinnerSelectionId);
+    }
+
     private int getTargetTimeOffset() {
         Spinner timeZoneSpinner = (Spinner)findViewById(R.id.to_timezones_spinner);
         long spinnerSelectionId = timeZoneSpinner.getSelectedItemId();
 
         Calendar today = Calendar.getInstance();
 
-        TimeZone targetTimeZone = getTimeZone(spinnerSelectionId);
+        TimeZone targetTimeZone = getTimeZoneGMT(spinnerSelectionId);
 
         return targetTimeZone.getOffset(GregorianCalendar.AD, today.get(Calendar.YEAR),
                 today.get(Calendar.MONTH),
@@ -156,7 +204,7 @@ public class MainActivity extends ActionBarActivity {
                 today.get(Calendar.MILLISECOND));
     }
 
-    private TimeZone getTimeZone(long spinnerSelectionId) {
+    private TimeZone getTimeZoneGMT(long spinnerSelectionId) {
         TimeZone timeZone;
         if (spinnerSelectionId == 0) {
             timeZone = TimeZone.getTimeZone("GMT-8:00");
@@ -172,6 +220,20 @@ public class MainActivity extends ActionBarActivity {
             timeZone = TimeZone.getTimeZone("GMT+2:00");
         } else {
             timeZone = TimeZone.getTimeZone("GMT+8:00");
+        }
+        return timeZone;
+    }
+
+    private TimeZone getTimeZoneLocation(long spinnerSelectionId) {
+        TimeZone timeZone;
+        if (spinnerSelectionId == 0 || spinnerSelectionId == 1) {
+            timeZone = TimeZone.getTimeZone("America/Los_Angeles");
+        } else if (spinnerSelectionId == 2 || spinnerSelectionId == 3) {
+            timeZone = TimeZone.getTimeZone("America/New_York");
+        } else if (spinnerSelectionId == 4 || spinnerSelectionId == 5) {
+            timeZone = TimeZone.getTimeZone("Europe/Brussels");
+        } else {
+            timeZone = TimeZone.getTimeZone("Asia/Singapore");
         }
         return timeZone;
     }
@@ -215,7 +277,7 @@ public class MainActivity extends ActionBarActivity {
                                 tz.getDisplayName(false, TimeZone.SHORT) + ")");
     }
 
-    private Calendar getDateAndTime() {
+    private Calendar getInputDateAndTime() {
         DatePicker datePicker = (DatePicker)findViewById(R.id.datePicker);
         int day = datePicker.getDayOfMonth();
         int month = datePicker.getMonth(); // returns 0-11
