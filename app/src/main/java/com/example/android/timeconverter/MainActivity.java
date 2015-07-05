@@ -139,26 +139,26 @@ public class MainActivity extends ActionBarActivity {
 
         if (isObservingDaylightSavings == false) {
             if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-07:00")) {
-                daylightSavingsText.setText("Daylight savings time is currently not observed. " +
+                daylightSavingsText.setText("Daylight saving time is currently not observed. " +
                         "Consider using PST (GMT-08:00) instead");
             } else if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-04:00")) {
-                daylightSavingsText.setText("Daylight savings time is currently not observed. " +
+                daylightSavingsText.setText("Daylight saving time is currently not observed. " +
                         "Consider using EST (GMT-05:00) instead");
             } else if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT+02:00")) {
-                daylightSavingsText.setText("Daylight savings time is currently not observed. " +
+                daylightSavingsText.setText("Daylight saving time is currently not observed. " +
                         "Consider using CET (GMT+01:00) instead");
             } else {
                 daylightSavingsText.setVisibility(View.GONE);
             }
         } else if (isObservingDaylightSavings == true) {
             if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-08:00")) {
-                daylightSavingsText.setText("Daylight savings time is currently being observed. " +
+                daylightSavingsText.setText("Daylight saving time is currently being observed. " +
                         "Consider using PDT (GMT-07:00) instead");
             } else if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT-05:00")) {
-                daylightSavingsText.setText("Daylight savings time is currently being observed. " +
+                daylightSavingsText.setText("Daylight saving time is currently being observed. " +
                         "Consider using EDT (GMT-04:00) instead");
             } else if (sourceTimeZone.getDisplayName(false, TimeZone.SHORT).equals("GMT+01:00")) {
-                daylightSavingsText.setText("Daylight savings time is currently being observed. " +
+                daylightSavingsText.setText("Daylight saving time is currently being observed. " +
                         "Consider using CEST (GMT+02:00) instead");
             } else {
                 daylightSavingsText.setVisibility(View.GONE);
