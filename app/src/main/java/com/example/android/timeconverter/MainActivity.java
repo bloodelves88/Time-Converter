@@ -265,9 +265,37 @@ public class MainActivity extends ActionBarActivity {
 
     private void setDateText(Calendar date) {
         TextView convertedDateText = (TextView)findViewById(R.id.converted_date);
-        convertedDateText.setText("" + date.get(Calendar.DATE) + "/"
-                                  + (date.get(Calendar.MONTH) + 1)
-                                  + "/" + date.get(Calendar.YEAR));
+
+        String month = "";
+        int monthNumber = date.get(Calendar.MONTH);
+        if (monthNumber == 0) {
+            month = "Jan";
+        } else if (monthNumber == 1) {
+            month = "Feb";
+        } else if (monthNumber == 2) {
+            month = "Mar";
+        } else if (monthNumber == 3) {
+            month = "Apr";
+        } else if (monthNumber == 4) {
+            month = "May";
+        } else if (monthNumber == 5) {
+            month = "Jun";
+        } else if (monthNumber == 6) {
+            month = "Jul";
+        } else if (monthNumber == 7) {
+            month = "Aug";
+        } else if (monthNumber == 8) {
+            month = "Sep";
+        } else if (monthNumber == 9) {
+            month = "Oct";
+        } else if (monthNumber == 10) {
+            month = "Nov";
+        } else if (monthNumber == 11) {
+            month = "Dec";
+        }
+
+        convertedDateText.setText(date.get(Calendar.DATE) + " "
+                                  + month + " " + date.get(Calendar.YEAR));
     }
 
     private void setCurrentTimeZoneText() {
