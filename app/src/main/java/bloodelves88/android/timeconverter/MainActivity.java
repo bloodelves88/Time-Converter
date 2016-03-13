@@ -1,9 +1,11 @@
 package bloodelves88.android.timeconverter;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,7 +34,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        Spinner sourceTimeZoneSpinner = (Spinner)findViewById(R.id.from_timezones_spinner);
+
+        // Configure the source dropdown list such that it updates the converted time when changed
+        Spinner sourceTimeZoneSpinner = (Spinner) findViewById(R.id.from_timezones_spinner);
         sourceTimeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view,
                                        int position, long id) {
@@ -44,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Spinner targetTimeZoneSpinner = (Spinner)findViewById(R.id.to_timezones_spinner);
+        // Configure the target dropdown list such that it updates the converted time when changed
+        Spinner targetTimeZoneSpinner = (Spinner) findViewById(R.id.to_timezones_spinner);
         setDefaultTargetSpinnerSelection(targetTimeZoneSpinner);
         targetTimeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view,
@@ -57,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
+        // Set the time to the current hour on start
+        TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
         timePicker.setCurrentMinute(0);
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
 
@@ -66,17 +72,44 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        DatePicker datePicker = (DatePicker)findViewById(R.id.datePicker);
+        // Set the date picker to today's date on start
+        DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
         datePicker.init(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(),
-                        new DatePicker.OnDateChangedListener() {
+                new DatePicker.OnDateChangedListener() {
 
-            @Override
-            public void onDateChanged(DatePicker view, int year, int month, int day) {
-                convertTime();
-            }
-        });
+                    @Override
+                    public void onDateChanged(DatePicker view, int year, int month, int day) {
+                        convertTime();
+                    }
+                });
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, PreferenceActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void setDefaultTargetSpinnerSelection(Spinner targetTimeZoneSpinner) {
@@ -99,28 +132,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     public void convertTime() {
         Calendar date = getInputDateAndTime();
 
@@ -141,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDaylightSavingsText(boolean isObservingDaylightSavings, TimeZone sourceTimeZone) {
-        TextView daylightSavingsText = (TextView)findViewById(R.id.daylight_savings_warning);
+        TextView daylightSavingsText = (TextView) findViewById(R.id.daylight_savings_warning);
 
         daylightSavingsText.setVisibility(View.VISIBLE);
 
@@ -178,21 +189,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private TimeZone getSourceTimeZoneGMT() {
-        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.from_timezones_spinner);
+        Spinner timeZoneSpinner = (Spinner) findViewById(R.id.from_timezones_spinner);
         long spinnerSelectionId = timeZoneSpinner.getSelectedItemId();
 
         return getTimeZoneGMT(spinnerSelectionId);
     }
 
     private TimeZone getSourceTimeZoneLocation() {
-        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.from_timezones_spinner);
+        Spinner timeZoneSpinner = (Spinner) findViewById(R.id.from_timezones_spinner);
         long spinnerSelectionId = timeZoneSpinner.getSelectedItemId();
 
         return getTimeZoneLocation(spinnerSelectionId);
     }
 
     private int getTargetTimeOffset() {
-        Spinner timeZoneSpinner = (Spinner)findViewById(R.id.to_timezones_spinner);
+        Spinner timeZoneSpinner = (Spinner) findViewById(R.id.to_timezones_spinner);
         long spinnerSelectionId = timeZoneSpinner.getSelectedItemId();
 
         Calendar today = Calendar.getInstance();
@@ -241,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setTimeText(Calendar date) {
-        TextView convertedTimeText = (TextView)findViewById(R.id.converted_time);
+        TextView convertedTimeText = (TextView) findViewById(R.id.converted_time);
 
         int hour = date.get(Calendar.HOUR);
         int minute = date.get(Calendar.MINUTE);
@@ -266,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDateText(Calendar date) {
-        TextView convertedDateText = (TextView)findViewById(R.id.converted_date);
+        TextView convertedDateText = (TextView) findViewById(R.id.converted_date);
 
         String month = "";
         int monthNumber = date.get(Calendar.MONTH);
@@ -297,23 +308,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         convertedDateText.setText(date.get(Calendar.DATE) + " "
-                                  + month + " " + date.get(Calendar.YEAR));
+                + month + " " + date.get(Calendar.YEAR));
     }
 
     private void setCurrentTimeZoneText() {
-        TextView currentTimeZone = (TextView)findViewById(R.id.current_timezone);
+        TextView currentTimeZone = (TextView) findViewById(R.id.current_timezone);
         TimeZone tz = TimeZone.getDefault();
         currentTimeZone.setText("(you are in the " + tz.getID() + " timezone, " +
-                                tz.getDisplayName(false, TimeZone.SHORT) + ")");
+                tz.getDisplayName(false, TimeZone.SHORT) + ")");
     }
 
     private Calendar getInputDateAndTime() {
-        DatePicker datePicker = (DatePicker)findViewById(R.id.datePicker);
+        DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
         int day = datePicker.getDayOfMonth();
         int month = datePicker.getMonth(); // returns 0-11
         int year = datePicker.getYear();
 
-        TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
+        TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
         int hour = timePicker.getCurrentHour(); // Returns 0-23
         int minute = timePicker.getCurrentMinute();
 
