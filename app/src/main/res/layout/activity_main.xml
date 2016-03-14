@@ -58,6 +58,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/dateText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -69,7 +70,8 @@
                 android:id="@+id/datePicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:calendarViewShown="false" />
+                android:calendarViewShown="false"
+                android:datePickerMode="spinner" />
 
         </LinearLayout>
 
@@ -91,7 +93,8 @@
             <TimePicker
                 android:id="@+id/timePicker"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:timePickerMode="spinner"/>
 
         </LinearLayout>
 

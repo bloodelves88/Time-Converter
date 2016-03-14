@@ -6,6 +6,9 @@
     <CheckBoxPreference
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:key="wifi enabled"
-        android:title="WiFi" />
+        android:key="@string/date_picker_preference_key"
+        android:title="Show date picker"
+        android:defaultValue="true" />
+
+
 </PreferenceScreen>

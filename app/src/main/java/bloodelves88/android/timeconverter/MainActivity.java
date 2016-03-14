@@ -1,8 +1,10 @@
 package bloodelves88.android.timeconverter;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
             "Consider using %s instead";
     private static final String DST_OBSERVED = "Daylight saving time is currently being observed. " +
             "Consider using %s instead";
+    private static final int SETTINGS_DONE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-
+        updateUIUsingSettings();
         // Configure the source dropdown list such that it updates the converted time when changed
         Spinner sourceTimeZoneSpinner = (Spinner) findViewById(R.id.from_timezones_spinner);
         sourceTimeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -102,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, PreferenceActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, SETTINGS_DONE);
             return true;
         } else if (id == android.R.id.home) {
             finish();
@@ -110,6 +113,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case SETTINGS_DONE:
+                updateUIUsingSettings();
+                break;
+
+        }
+    }
+
+    private void updateUIUsingSettings() {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
+        TextView dateText = (TextView) findViewById(R.id.dateText);
+
+        boolean isDatePickerShown = sharedPrefs.getBoolean(getString(R.string.date_picker_preference_key), true);
+        if (isDatePickerShown) {
+            datePicker.setVisibility(View.VISIBLE);
+            dateText.setVisibility(View.VISIBLE);
+        } else {
+            datePicker.setVisibility(View.GONE);
+            dateText.setVisibility(View.GONE);
+        }
+
     }
 
     private void setDefaultTargetSpinnerSelection(Spinner targetTimeZoneSpinner) {

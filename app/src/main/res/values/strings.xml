@@ -21,4 +21,16 @@
         <item>SGT (GMT +8)</item>
     </string-array>
 
+    <!-- Preference Strings -->
+    <string name="date_picker_preference_key">Date Picker Key</string>
+    <string name="time_format_title">Time format</string>
+    <string name="time_format_summary">12 hour or 24 hour formats</string>
+
+
+    <!-- Time formats -->
+    <string-array name="time_formats_array">
+        <item>12 hour</item>
+        <item>24 hour</item>
+    </string-array>
+
 </resources>
