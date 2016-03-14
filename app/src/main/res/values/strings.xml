@@ -25,7 +25,7 @@
     <string name="date_picker_preference_key">Date Picker Key</string>
     <string name="time_format_title">Time format</string>
     <string name="time_format_summary">12 hour or 24 hour formats</string>
-
+    <string name="time_format_preference_key">Time Format Key</string>
 
     <!-- Time formats -->
     <string-array name="time_formats_array">

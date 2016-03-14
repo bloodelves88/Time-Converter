@@ -10,5 +10,15 @@
         android:title="Show date picker"
         android:defaultValue="true" />
 
+    <!-- Does not work before android 4.4
+    android:summary="%s"
+    -->
 
+    <ListPreference
+        android:defaultValue="12 hour"
+        android:entries="@array/time_formats_array"
+        android:entryValues="@array/time_formats_array"
+        android:key="@string/time_format_preference_key"
+        android:summary="@string/time_format_summary"
+        android:title="@string/time_format_title" />
 </PreferenceScreen>

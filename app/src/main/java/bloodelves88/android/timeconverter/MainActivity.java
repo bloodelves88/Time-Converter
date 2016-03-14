@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String DST_OBSERVED = "Daylight saving time is currently being observed. " +
             "Consider using %s instead";
     private static final int SETTINGS_DONE = 1;
+    private boolean is12HourFormat = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         updateUIUsingSettings();
+
         // Configure the source dropdown list such that it updates the converted time when changed
         Spinner sourceTimeZoneSpinner = (Spinner) findViewById(R.id.from_timezones_spinner);
         sourceTimeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -78,13 +80,13 @@ public class MainActivity extends AppCompatActivity {
         // Set the date picker to today's date on start
         DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
         datePicker.init(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(),
-                new DatePicker.OnDateChangedListener() {
+            new DatePicker.OnDateChangedListener() {
 
-                    @Override
-                    public void onDateChanged(DatePicker view, int year, int month, int day) {
-                        convertTime();
-                    }
-                });
+                @Override
+                public void onDateChanged(DatePicker view, int year, int month, int day) {
+                    convertTime();
+                }
+            });
     }
 
     @Override
@@ -119,11 +121,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            case SETTINGS_DONE:
-                updateUIUsingSettings();
-                break;
-
+        if (requestCode == SETTINGS_DONE) {
+            updateUIUsingSettings();
+            convertTime();
         }
     }
 
@@ -142,6 +142,12 @@ public class MainActivity extends AppCompatActivity {
             dateText.setVisibility(View.GONE);
         }
 
+        String result = sharedPrefs.getString(getString(R.string.time_format_preference_key), "12 hour");
+        if (result.equals("12 hour")) {
+            is12HourFormat = true;
+        } else {
+            is12HourFormat = false;
+        }
     }
 
     private void setDefaultTargetSpinnerSelection(Spinner targetTimeZoneSpinner) {
@@ -289,22 +295,35 @@ public class MainActivity extends AppCompatActivity {
         int hour = date.get(Calendar.HOUR);
         int minute = date.get(Calendar.MINUTE);
 
-        if (hour == 0) {
-            hour = 12;
-        }
+        if (is12HourFormat) {
+            if (hour == 0) {
+                hour = 12;
+            }
 
-        if (minute == 0) {
-            convertedTimeText.setText(hour + ":" + minute + "0");
-        } else if (minute < 10) {
-            convertedTimeText.setText(hour + ":0" + minute);
-        } else {
-            convertedTimeText.setText(hour + ":" + minute);
-        }
+            if (minute == 0) {
+                convertedTimeText.setText(hour + ":" + minute + "0");
+            } else if (minute < 10) {
+                convertedTimeText.setText(hour + ":0" + minute);
+            } else {
+                convertedTimeText.setText(hour + ":" + minute);
+            }
 
-        if (date.get(Calendar.AM_PM) == Calendar.AM) {
-            convertedTimeText.append(" am");
+            if (date.get(Calendar.AM_PM) == Calendar.AM) {
+                convertedTimeText.append(" am");
+            } else {
+                convertedTimeText.append(" pm");
+            }
         } else {
-            convertedTimeText.append(" pm");
+            if (date.get(Calendar.AM_PM) == Calendar.PM) {
+                hour += 12;
+            }
+            if (minute == 0) {
+                convertedTimeText.setText(hour + ":" + minute + "0");
+            } else if (minute < 10) {
+                convertedTimeText.setText(hour + ":0" + minute);
+            } else {
+                convertedTimeText.setText(hour + ":" + minute);
+            }
         }
     }
 
